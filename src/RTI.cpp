@@ -491,16 +491,18 @@ void RayTracingInterface::test_volume_boundary(const moab::EntityHandle volume,
   moab::ErrorCode rval;
   int dir;
 
-  // if (history && history->prev_facets.size()) {
-  //   boundary_case(volume, dir, uvw[0], uvw[1], uvw[2], history->prev_facets.back(), surface);
-  // } else {
-    // find nearest facet
-    moab::EntityHandle surf, facet;
+  moab::EntityHandle facet;
+
+  if (history && history->size() > 0) {
+    rval = history->get_last_intersection(facet);
+    MB_CHK_SET_ERR_CONT(rval, "Failed to get a facet from history with size > 0");
+  } else {
+    moab::EntityHandle surf;
     double dist;
     closest(volume, xyz, dist, &surf, &facet);
+  }
 
-    boundary_case(volume, dir, uvw[0], uvw[1], uvw[2], facet, surface);
-    //  }
+  boundary_case(volume, dir, uvw[0], uvw[1], uvw[2], facet, surface);
 
   result = dir;
 }
