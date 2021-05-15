@@ -8,6 +8,8 @@
 
 int main() {
 
+  // test that we can successfully write a MOAB mesh
   write_test_mesh();
 
+  return 0;
 }

@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 
 #include "test_utils.hpp"
@@ -28,10 +26,8 @@ int main() {
 
   moab::EntityHandle sphere_vol = vols[0];
 
-  // fire a test ray
+  // setup a test location
   double org[3] = {0.0, 0.0, 0.0};
-  double dir[3] = {1.0, 0.0, 0.0};
-
   double dist = 0.0;
 
   std::cout << "Running closest test" << std::endl;
