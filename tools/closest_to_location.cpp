@@ -1,5 +1,4 @@
 
-
 #include <iostream>
 
 // MOAB
@@ -11,8 +10,8 @@
 
 int main(int argc, char** argv) {
 
+  // Define program options
   ProgOptions po("Program to find closest surface to a location");
-
   po.addRequiredArg<std::string>("filename", "MOAB surface mesh");
   po.addRequiredArg<int>("volume_id", "Volume ID used to query the nearest location");
   // these have to be strings b/c ProgOptions won't parse a negative value correctly
@@ -20,6 +19,7 @@ int main(int argc, char** argv) {
   po.addOpt<double>(",y", "Y coordinate to query");
   po.addOpt<double>(",z", "Z coordinate to query");
 
+  // parse the command line
   po.parseCommandLine(argc, argv);
 
   // create new MOAB instance
@@ -27,15 +27,17 @@ int main(int argc, char** argv) {
 
   moab::ErrorCode rval;
 
+  // load the requested file
   rval = MBI->load_file(po.getReqArg<std::string>("filename").c_str());
   MB_CHK_SET_ERR(rval, "Failed to load test file");
 
-  std::unique_ptr<RayTracingInterface> RTI(new RayTracingInterface(MBI));
 
+  // create and initialize the ray tracing interface
+  std::unique_ptr<RayTracingInterface> RTI(new RayTracingInterface(MBI));
   rval = RTI->init();
   MB_CHK_SET_ERR(rval, "Failed to initialize the RTI.");
 
-
+  // get the requested volume by its ID
   moab::EntityHandle vol = RTI->gttool()->entity_by_id(3, po.getReqArg<int>("volume_id"));
 
   // fire a test ray
@@ -46,6 +48,7 @@ int main(int argc, char** argv) {
   po.getOpt<double>(",y", org + 1);
   po.getOpt<double>(",z", org + 2);
 
+  // retrieve the closest surface and facet
   EntityHandle surf, facet;
   double dist = 0.0;
   RTI->closest(vol, org, dist, &surf, &facet);

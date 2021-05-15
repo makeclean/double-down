@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <cassert>
+#include <memory>
 #include <ctime>
 
 #include "moab/ProgOptions.hpp"
@@ -29,23 +30,29 @@ int main(int argc, char** argv) {
 
   po.parseCommandLine(argc, argv);
 
+// report whether or not AVX2 is available
 #ifdef __AVX2__
   std::cout << "AVX2 Enabled" << std::endl;
 #endif
 
-  RayTracingInterface* RTI = new RayTracingInterface();
+  // create a new ray tracing interface
+  std::unique_ptr<RayTracingInterface> RTI = std::make_unique<RayTracingInterface>();
 
+  // load the requested file
   moab::ErrorCode rval;
   rval = RTI->load_file(filename);
   MB_CHK_SET_ERR(rval, "Failed to load file: " + filename);
 
+  // initialize the ray tracing interface
   rval = RTI->init();
   MB_CHK_SET_ERR(rval, "Failed to initialize the RayTracingInterface.");
 
+  // get all volumes
   moab::Range vols;
   rval = RTI->get_vols(vols);
   MB_CHK_SET_ERR(rval, "Failed to get volumes from the RTI.");
 
+  // get ready to fire randomly oriented rays from the origin of the model
   int num_rays = 1000000;
   double total= 0.0;
   std::clock_t mark;
@@ -71,12 +78,12 @@ int main(int argc, char** argv) {
     hit.geomID = RTC_INVALID_GEOMETRY_ID;
     hit.primID = RTC_INVALID_GEOMETRY_ID;
 
-    // fire ray
+    // fire ray, only count timing around this call
     mark = std::clock();
     RTI->fire(vols.front(), rayhit);
     total += std::clock() - mark;
 
-   // make sure we hit something
+    // make sure we hit something
     if (rayhit.hit.geomID == -1) {
       std::cout << "Miss!" << std::endl;
       exit(1);
@@ -84,12 +91,12 @@ int main(int argc, char** argv) {
 
   }
 
+  // report timing to screen
   double total_sec = total / (double)CLOCKS_PER_SEC;
   double per_ray = total_sec / (double)num_rays;
 
   std::cout << "Total time in Ray Fire: " << total_sec << " sec" << std::endl;
   std::cout << "Total time per Ray Fire: " << per_ray << " sec" << std::endl;
 
-  delete RTI;
   return 0;
 }
