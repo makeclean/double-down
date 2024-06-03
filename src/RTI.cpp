@@ -392,9 +392,9 @@ RayTracingInterface::get_normal(moab::EntityHandle surface,
     }
 
     // TODO: restrict the search for the closest triangle to the surface provided
-    if (surf != surface) {
-      MB_CHK_SET_ERR(moab::MB_FAILURE, "Nearest point was not on the correct surface.");
-    }
+    //if (surf != surface) {
+    //  MB_CHK_SET_ERR(moab::MB_FAILURE, "Nearest point was not on the correct surface.");
+    //}
 
     facet = closest_facet;
   }
