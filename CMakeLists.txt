@@ -22,8 +22,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -march=native -mavx2")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -march=native -mavx2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -march=native")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -march=native")
 
 IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64") # for desktop
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2")
